@@ -1,8 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/admin-auth';
+import { NextResponse } from 'next/server';
+import { getAll } from '@/lib/sheets';
 
-export async function GET(request: NextRequest) {
-  const user = await requireAuth(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  return NextResponse.json({ valid: true, name: user.name, role: user.role });
+export async function GET() {
+  try {
+    const items = await getAll('rooms');
+    return NextResponse.json({ rooms: items, total: items.length });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
